@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'favoriteList.dart';
+import 'favorite_list.dart';
 import 'mainPage.dart';
-import 'widgets/bottomNavBar.dart';
-import 'widgets/appBarCustom.dart';
+import 'widgets/bottom_nav_bar.dart';
+import 'widgets/app_bar_custom.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

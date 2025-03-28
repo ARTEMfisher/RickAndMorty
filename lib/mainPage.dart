@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:rick_and_morty/api/getCharacter.dart';
+import 'package:rick_and_morty/api/get_character.dart';
 import 'package:rick_and_morty/constants/colors.dart';
 import 'package:rick_and_morty/api/models/character.dart';
 import 'package:rick_and_morty/api/sqlite.dart';
-import 'widgets/characterCard.dart';
+import 'widgets/character_card.dart';
 
 class CharactersPage extends StatefulWidget {
   const CharactersPage({super.key});

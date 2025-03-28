@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty/api/sqlite.dart';
 import 'package:rick_and_morty/api/models/character.dart';
-import 'widgets/characterCard.dart';
+import 'widgets/character_card.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
