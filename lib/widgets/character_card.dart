@@ -4,29 +4,22 @@ import 'package:rick_and_morty/constants/colors.dart';
 import 'package:rick_and_morty/widgets/fav_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class CharacterCard extends StatefulWidget {
-  final Character character;
-  final VoidCallback onFavoriteChanged;
+class CharacterCard extends StatelessWidget {
 
   const CharacterCard({
     super.key,
     required this.character,
-    required this.onFavoriteChanged,
   });
+  final Character character;
 
   @override
-  State<CharacterCard> createState() => _CharacterCardState();
-}
-
-class _CharacterCardState extends State<CharacterCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
+  Widget build(BuildContext context) => Card(
+      key: ValueKey(character.id),
       color: Theme.of(context).cardColor,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Row(
-        children: [
+        children: <Widget>[
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(16),
@@ -36,7 +29,7 @@ class _CharacterCardState extends State<CharacterCard> {
               width: 140,
               height: 140,
               fit: BoxFit.cover,
-              image: CachedNetworkImageProvider(widget.character.image),
+              image: CachedNetworkImageProvider(character.image),
             ),
           ),
           Expanded(
@@ -44,43 +37,41 @@ class _CharacterCardState extends State<CharacterCard> {
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
-                    widget.character.name,
+                    character.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Row(
-                    children: [
+                    children: <Widget>[
                       Container(
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.all(Radius.circular(10)),
-                          color: widget.character.status == 'Alive'
+                          color: character.status == 'Alive'
                               ? greenColor
-                              : widget.character.status == 'Dead'
+                              : character.status == 'Dead'
                               ? redColor
                               : greyColor,
                         ),
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        "${widget.character.status} - ${widget.character.species}",
+                        '${character.status} - ${character.species}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  FavButton(
-                    character: widget.character,
-                    onFavoriteChanged: widget.onFavoriteChanged,
-                  ),
+                  FavButton(character: character),
                 ],
               ),
             ),
@@ -88,5 +79,4 @@ class _CharacterCardState extends State<CharacterCard> {
         ],
       ),
     );
-  }
 }

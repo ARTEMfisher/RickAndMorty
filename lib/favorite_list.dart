@@ -1,46 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:rick_and_morty/api/sqlite.dart';
+import 'package:provider/provider.dart';
 import 'package:rick_and_morty/api/models/character.dart';
-import 'widgets/character_card.dart';
+import 'package:rick_and_morty/providers/character_provider.dart';
+import 'package:rick_and_morty/widgets/character_card.dart';
 
-class FavoritesPage extends StatefulWidget {
+class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
 
   @override
-  State<FavoritesPage> createState() => _FavoritesPageState();
-}
+  Widget build(BuildContext context) => Consumer<CharacterProvider>(
+      builder: (BuildContext context, CharacterProvider provider, Widget? child) {
+        final List<Character> favoriteCharacters = provider.characters
+            .where((Character character) => character.isFavorite)
+            .toList()
+          ..sort((Character a, Character b) => a.name.compareTo(b.name));
 
-class _FavoritesPageState extends State<FavoritesPage> {
-  List<Character> favoriteCharacters = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFavorites();
-  }
-
-  Future<void> _loadFavorites() async {
-    final favorites = await DatabaseHelper.instance.getFavoriteCharacters();
-    setState(() {
-      favoriteCharacters = favorites;
-    });
-  }
-
-  void _onFavoriteChanged() {
-    _loadFavorites();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: favoriteCharacters.length,
-        itemBuilder: (context, index) {
-          final character = favoriteCharacters[index];
-          return CharacterCard(
-            character: character,
-            onFavoriteChanged: _onFavoriteChanged,
+        if (favoriteCharacters.isEmpty) {
+          return const Center(
+            child: Text('No favorites added'),
           );
-        },
+        }
+
+        return ListView.builder(
+          itemCount: favoriteCharacters.length,
+          itemBuilder: (BuildContext context, int index) {
+            final Character character = favoriteCharacters[index];
+            return CharacterCard(character: character);
+          },
+        );
+      },
     );
-  }
 }

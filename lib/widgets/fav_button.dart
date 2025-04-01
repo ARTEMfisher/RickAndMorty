@@ -1,66 +1,53 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:provider/provider.dart';
+import '../providers/character_provider.dart';
 import 'package:rick_and_morty/constants/colors.dart';
 import 'package:rick_and_morty/api/models/character.dart';
-import 'package:rick_and_morty/api/sqlite.dart';
 
 class FavButton extends StatefulWidget {
-  final Character character;
-  final VoidCallback onFavoriteChanged;
 
   const FavButton({
     super.key,
     required this.character,
-    required this.onFavoriteChanged,
   });
+  final Character character;
 
   @override
   State<FavButton> createState() => _FavButtonState();
 }
 
-class _FavButtonState extends State<FavButton> with SingleTickerProviderStateMixin {
+class _FavButtonState extends State<FavButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
-  late bool isFavorite;
 
   @override
   void initState() {
     super.initState();
-    isFavorite = widget.character.isFavorite;
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    if (isFavorite) {
-      _controller.value = 1.0;
-    }
-    final curvedAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    );
+    _controller.value = widget.character.isFavorite ? 1.0 : 0.0;
+    final curvedAnimation =
+    CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _colorAnimation = ColorTween(
       begin: lightGreyColor,
       end: goldColor,
     ).animate(curvedAnimation);
   }
 
-  void _toggleFavorite() async {
-    if (!isFavorite) {
+  Future<void> _toggleFavorite() async {
+    final provider =
+    Provider.of<CharacterProvider>(context, listen: false);
+    if (!widget.character.isFavorite) {
       await _controller.forward();
     } else {
       await _controller.reverse();
     }
-    await DatabaseHelper.instance.toggleFavorite(widget.character.id);
-    widget.character.toggleFavorite();
-    if (mounted) {
-      setState(() {
-        isFavorite = !isFavorite;
-      });
-      widget.onFavoriteChanged();
-    }
+    provider.toggleFavorite(widget.character);
   }
-
-
 
   @override
   void dispose() {
@@ -69,31 +56,27 @@ class _FavButtonState extends State<FavButton> with SingleTickerProviderStateMix
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
+  Widget build(BuildContext context) => AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
-        return IconButton(
+      builder: (BuildContext context, Widget? child) => IconButton(
           onPressed: _toggleFavorite,
           icon: Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()..rotateY(_controller.value * math.pi),
             child: Icon(
-              isFavorite ? Icons.star : Icons.star_border,
+              widget.character.isFavorite ? Icons.star : Icons.star_border,
               color: Colors.white,
             ),
           ),
           style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(_colorAnimation.value),
+            backgroundColor:
+            WidgetStateProperty.all(_colorAnimation.value),
             shape: WidgetStateProperty.all(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
-        );
-      },
+        ),
     );
-
-  }
 }

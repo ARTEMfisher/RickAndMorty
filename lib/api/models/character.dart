@@ -1,11 +1,25 @@
-import 'package:rick_and_morty/api/sqlite.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+part 'character.g.dart';
+
+@HiveType(typeId: 0)
 class Character {
+  @HiveField(0)
   final int id;
+
+  @HiveField(1)
   final String name;
+
+  @HiveField(2)
   final String status;
+
+  @HiveField(3)
   final String species;
+
+  @HiveField(4)
   final String image;
+
+  @HiveField(5)
   bool isFavorite;
 
   Character({
@@ -16,7 +30,6 @@ class Character {
     required this.image,
     this.isFavorite = false,
   });
-
   factory Character.fromJson(Map<String, dynamic> json) {
     return Character(
       id: json['id'],

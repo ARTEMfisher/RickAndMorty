@@ -5,13 +5,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return AppBar(
+  Widget build(BuildContext context) => AppBar(
       title: const Text('Rick and Morty'),
-      actions: [
+      actions: <Widget>[
         IconButton(
           onPressed: () {
-            final adaptiveTheme = AdaptiveTheme.of(context);
+            final AdaptiveThemeManager<ThemeData> adaptiveTheme = AdaptiveTheme.of(context);
             if (adaptiveTheme.mode.isDark) {
               adaptiveTheme.setLight();
             } else {
@@ -26,7 +25,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     );
-  }
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

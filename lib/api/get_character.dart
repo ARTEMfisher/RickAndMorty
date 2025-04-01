@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'models/character.dart';
 
 class ApiGetCharecters {
-  String baseUrl = "https://rickandmortyapi.com/api/character/";
+  String baseUrl = 'https://rickandmortyapi.com/api/character/';
 
   Future<Map<String, dynamic>> fetchCharacters(String url) async {
     final response = await http.get(Uri.parse(url));
@@ -17,7 +17,7 @@ class ApiGetCharecters {
         'nextPage': data['info']['next']
       };
     } else {
-      throw Exception("Failed to load characters");
+      throw Exception('Failed to load characters');
     }
   }
 }
