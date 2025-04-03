@@ -5,8 +5,8 @@ import 'package:hive/hive.dart';
 
 class CharacterProvider extends ChangeNotifier {
   final ApiGetCharecters apiService = ApiGetCharecters();
-  final List<Character> _characters = <Character>[];
-  String? _nextPage = 'https://rickandmortyapi.com/api/character/';
+  final List<Character> _characters = [];
+  String? _nextPage = "https://rickandmortyapi.com/api/character/";
   bool _isLoading = false;
   final Box<Character> favoritesBox = Hive.box<Character>('favorites');
 
@@ -17,11 +17,11 @@ class CharacterProvider extends ChangeNotifier {
   Future<void> fetchCharacters() async {
     if (_isLoading || _nextPage == null) return;
     _isLoading = true;
-    notifyListeners();
+    Future.delayed(Duration.zero, () => notifyListeners());
 
     try {
       final result = await apiService.fetchCharacters(_nextPage!);
-      final List<Character> fetchedCharacters = result['characters'];
+      List<Character> fetchedCharacters = result['characters'];
       _nextPage = result['nextPage'];
       for (var character in fetchedCharacters) {
         if (favoritesBox.containsKey(character.id)) {
@@ -29,21 +29,27 @@ class CharacterProvider extends ChangeNotifier {
         }
       }
       _characters.addAll(fetchedCharacters);
-    } catch (e) {
-
-    }
-
+    } catch (e) {}
     _isLoading = false;
+
+    Future.delayed(Duration.zero, () => notifyListeners());
+  }
+
+
+  Future<void> refreshCharacters() async {
+    _characters.clear();
+    _nextPage = "https://rickandmortyapi.com/api/character/";
     notifyListeners();
+    await fetchCharacters();
   }
 
   Future<void> toggleFavorite(Character character) async {
-    final index = _characters.indexWhere((Character c) => c.id == character.id);
+    final index = _characters.indexWhere((c) => c.id == character.id);
     if (index != -1) {
       final newFavorite = !_characters[index].isFavorite;
       _characters[index].isFavorite = newFavorite;
       if (newFavorite) {
-        await favoritesBox.put(character.id, character);
+        await favoritesBox.put(character.id, _characters[index]);
       } else {
         await favoritesBox.delete(character.id);
       }
